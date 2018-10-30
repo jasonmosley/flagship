@@ -6,9 +6,9 @@ import {
 } from 'react-native';
 
 import timeSince from '../lib/timeSince';
-import { bvDataSource } from '../lib/datasource';
-import PSLoading from './PSLoading';
+import { reviewDataSource } from '../lib/datasource';
 import * as variables from '../styles/variables';
+import { Loading } from '@brandingbrand/fscomponents';
 import { ReviewTypes } from '@brandingbrand/fscommerce';
 import translate, { translationKeys } from '../lib/translations';
 
@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
     padding: variables.padding.base
   },
   question: {
-    borderBottomWidth: 1,
-    borderColor: '#EEEEEE',
+    borderBottomWidth: variables.border.width,
+    borderColor: variables.border.color,
     paddingBottom: 10,
     marginBottom: 25
   },
@@ -104,7 +104,11 @@ export default class PSQAndA extends Component<PSQAndAProps, PSQAndAState> {
   }
 
   componentDidMount(): void {
-    bvDataSource.fetchQuestions({ ids: this.props.id })
+    if (!reviewDataSource.fetchQuestions) {
+      return;
+    }
+
+    reviewDataSource.fetchQuestions({ ids: this.props.id })
       .then((data: any) => {
         this.setState({ questions: data, isLoading: false });
         if (this.props.onDataLoaded) {
@@ -118,7 +122,7 @@ export default class PSQAndA extends Component<PSQAndAProps, PSQAndAState> {
     const { isLoading, questions } = this.state;
 
     if (isLoading) {
-      return <PSLoading style={{ marginTop: 80 }} />;
+      return <Loading style={{ marginTop: 80 }} />;
     } else if (questions.length) {
       return (
         <View style={styles.questions}>

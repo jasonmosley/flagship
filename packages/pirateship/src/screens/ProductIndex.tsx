@@ -9,6 +9,7 @@ import PSProductIndex from '../components/PSProductIndex';
 
 export interface ProductIndexProps extends ScreenProps {
   categoryId: string; // passed by Navigator
+  title?: string; // passed by Navigator
 }
 
 export default class ProductIndex extends Component<ProductIndexProps> {
@@ -17,8 +18,12 @@ export default class ProductIndex extends Component<ProductIndexProps> {
   static rightButtons: NavButton[] = [searchButton];
 
   render(): JSX.Element {
+    const { navigator } = this.props;
+
     return (
-      <PSScreenWrapper>
+      <PSScreenWrapper
+        navigator={navigator}
+      >
         <PSProductIndex {...this.props} />
       </PSScreenWrapper>
     );

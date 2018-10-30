@@ -8,7 +8,7 @@ import PSScreenWrapper from '../components/PSScreenWrapper';
 import React, { Component } from 'react';
 import { NavButton, NavigatorStyle, ScreenProps } from '../lib/commonTypes';
 import { dataSource } from '../lib/datasource';
-import { color, fontSize, grays, padding } from '../styles/variables';
+import { border, color, fontSize, padding, palette } from '../styles/variables';
 import formFieldStyles from '../styles/FormField';
 import { EMAIL_REGEX } from '../lib/constants';
 import PSButton from '../components/PSButton';
@@ -19,7 +19,7 @@ const arrowIcon = require('../../assets/images/arrow.png');
 
 const styles = StyleSheet.create({
   screenContainer: {
-    backgroundColor: grays.one
+    backgroundColor: palette.surface
   },
   container: {
     flex: 1,
@@ -59,17 +59,17 @@ const styles = StyleSheet.create({
     fontWeight: 'normal'
   },
   errorContainer: {
-    backgroundColor: grays.one,
+    backgroundColor: palette.surface,
     padding: padding.base,
     minHeight: 40
   },
   errorText: {
     fontWeight: 'bold',
-    color: color.red
+    color: palette.error
   },
   divider: {
     height: 1,
-    backgroundColor: color.gray,
+    backgroundColor: border.color,
     marginTop: padding.base
   },
   backButtonContainer: {
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     margin: padding.base
   },
   dismissButtonContainer: {
-    backgroundColor: grays.one
+    backgroundColor: palette.surface
   },
   dismissButton: {
     height: 40,
@@ -167,6 +167,7 @@ export default class ForgotPassword extends Component<
   }
 
   render(): JSX.Element {
+    const { navigator } = this.props;
     const { resetSent } = this.state;
     let body;
 
@@ -184,6 +185,7 @@ export default class ForgotPassword extends Component<
         scrollViewProps={{
           keyboardShouldPersistTaps: 'handled'
         }}
+        navigator={navigator}
       >
         <View style={styles.dismissButtonContainer}>
           <TouchableOpacity
@@ -215,7 +217,6 @@ export default class ForgotPassword extends Component<
           <PSButton
             titleStyle={styles.signUpText}
             title={translate.string(forgotPasswordTranslations.completedBtn)}
-            primary={true}
             onPress={this.props.onDismiss}
             style={styles.button}
           />
@@ -248,14 +249,13 @@ export default class ForgotPassword extends Component<
             value={this.state.values}
             onChange={this.updateFormValues}
             style={{
-              borderTopColor: color.lightGray,
-              borderTopWidth: 1
+              borderTopColor: border.color,
+              borderTopWidth: border.width
             }}
           />
           <PSButton
             title={translate.string(forgotPasswordTranslations.actionBtn)}
             onPress={this.resetPassword}
-            primary={true}
             style={styles.button}
             loading={isLoading}
           />

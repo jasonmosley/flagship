@@ -2,7 +2,7 @@ import { NavButton, NavigatorStyle, ScreenProps } from '../lib/commonTypes';
 import React, { Component } from 'react';
 import PSScreenWrapper from '../components/PSScreenWrapper';
 import PSButton from '../components/PSButton';
-import { color, padding } from '../styles/variables';
+import { border, padding } from '../styles/variables';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { backButton } from '../lib/navStyles';
 import { navBarDefault } from '../styles/Navigation';
@@ -16,8 +16,8 @@ import translate, { translationKeys } from '../lib/translations';
 const styles = StyleSheet.create({
   form: {
     marginTop: padding.base,
-    borderTopWidth: 1,
-    borderTopColor: color.lightGray
+    borderTopWidth: border.width,
+    borderTopColor: border.color
   }
 });
 
@@ -64,6 +64,7 @@ class EditPersonal extends Component<EditPersonalScreenProps> {
   }
 
   render(): JSX.Element {
+    const { navigator } = this.props;
     return (
       <PSScreenWrapper
         hideGlobalBanner={true}
@@ -73,6 +74,7 @@ class EditPersonal extends Component<EditPersonalScreenProps> {
         keyboardAvoidingViewProps={{
           keyboardVerticalOffset: 60 // offset action buttons
         }}
+        navigator={navigator}
       >
         <ScrollView
           keyboardShouldPersistTaps={'handled'}
@@ -97,7 +99,6 @@ class EditPersonal extends Component<EditPersonalScreenProps> {
             </View>
             <View style={AccountStyle.buttonContainer}>
               <PSButton
-                primary
                 title={translate.string(translationKeys.contactInfo.actions.save.actionBtn)}
                 onPress={this.save}
               />

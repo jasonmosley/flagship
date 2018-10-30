@@ -8,7 +8,7 @@ import PSButton from '../components/PSButton';
 import { backButton } from '../lib/navStyles';
 import { navBarDefault } from '../styles/Navigation';
 import { NavButton, NavigatorStyle, ScreenProps } from '../lib/commonTypes';
-import { color, grays, padding, palette } from '../styles/variables';
+import { border, color, padding, palette } from '../styles/variables';
 import formFieldStyles from '../styles/FormField';
 import { CUSTOMER_SERVICE_PHONE_NUMBER } from '../lib/constants';
 import { textbox } from '../lib/formTemplate';
@@ -20,11 +20,11 @@ const env = require('../../env/env');
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: grays.one
+    backgroundColor: palette.surface
   },
   text: {
     padding: padding.base,
-    color: color.darkGray
+    color: palette.onSurface
   },
   headerText: {
     fontWeight: 'bold',
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   errorText: {
     fontWeight: 'bold',
     marginBottom: padding.base,
-    color: color.red
+    color: palette.error
   },
   link: {
     fontWeight: 'bold',
@@ -111,6 +111,8 @@ export default class TrackOrderLanding extends Component<ScreenProps, TrackOrder
 
 
   render(): JSX.Element {
+    const { navigator } = this.props;
+
     return (
       <PSScreenWrapper
         style={styles.container}
@@ -122,6 +124,7 @@ export default class TrackOrderLanding extends Component<ScreenProps, TrackOrder
         keyboardAvoidingViewProps={{
           keyboardVerticalOffset: 56 // offset tab bar
         }}
+        navigator={navigator}
       >
         <View>
           <Text style={styles.text}>
@@ -156,8 +159,8 @@ export default class TrackOrderLanding extends Component<ScreenProps, TrackOrder
         <View
           style={{
             margin: padding.base,
-            borderBottomColor: color.gray,
-            borderBottomWidth: 1
+            borderBottomColor: border.color,
+            borderBottomWidth: border.width
           }}
         />
         <View>
@@ -171,7 +174,7 @@ export default class TrackOrderLanding extends Component<ScreenProps, TrackOrder
             <PSButton
               title={translate.string(orderHistoryTranslations.actions.contact.actionBtn)}
               onPress={this.goToContactUs}
-              light={true}
+              light
               style={styles.button}
             />
             <PSButton
@@ -179,7 +182,6 @@ export default class TrackOrderLanding extends Component<ScreenProps, TrackOrder
                 phone: CUSTOMER_SERVICE_PHONE_NUMBER
               })}
               onPress={this.callCustomerService}
-              primary={true}
               style={[styles.button, styles.rightButton]}
             />
           </View>

@@ -9,26 +9,21 @@ import {
 } from 'react-native';
 
 import React, { Component } from 'react';
-import { get } from 'lodash-es';
-import { Navigator } from 'react-native-navigation';
-
 import { CommerceTypes } from '@brandingbrand/fscommerce';
-import {
-  ProductIndex as PirateProductIndex,
-  ProductIndexSearch as PirateProductIndexSearch
-} from '@brandingbrand/fsproductindex';
+import { ProductIndex, ProductIndexSearch } from '@brandingbrand/fsproductindex';
 
-import { dataSource } from '../lib/datasource';
+import { dataSource, reviewDataSource } from '../lib/datasource';
 import { backButton, searchButton } from '../lib/navStyles';
 import { navBarDefault } from '../styles/Navigation';
 import { NavButton, NavigatorStyle } from '../lib/commonTypes';
 
-import PSProductItem from '../components/PSProductItem';
 import PSFilterActionBar from '../components/PSFilterActionBar';
 
-import { FilterItem } from '@brandingbrand/fscomponents';
-import { border, color, fontSize, grays, palette } from '../styles/variables';
+import { FilterItem, ProductItem } from '@brandingbrand/fscomponents';
+import { border, color, fontSize, palette } from '../styles/variables';
 import translate, { translationKeys } from '../lib/translations';
+
+type Navigator = import ('react-native-navigation').Navigator;
 
 const window = Dimensions.get('window');
 
@@ -37,7 +32,7 @@ const PIPStyle = StyleSheet.create({
     flex: 1
   },
   container: {
-    backgroundColor: '#fff',
+    backgroundColor: palette.background,
     paddingRight: 0,
     marginHorizontal: 15
   },
@@ -45,7 +40,7 @@ const PIPStyle = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: Platform.OS === 'android' ? 15 : 0,
     borderBottomColor: border.color,
-    borderBottomWidth: 1
+    borderBottomWidth: border.width
   },
   itemTotalText: {
     color: palette.primary
@@ -61,7 +56,7 @@ const PIPStyle = StyleSheet.create({
   filterBy: {
     padding: 15,
     paddingVertical: 10,
-    backgroundColor: grays.two
+    backgroundColor: palette.surface
   },
   filterByText: {
     fontSize: fontSize.small,
@@ -70,7 +65,7 @@ const PIPStyle = StyleSheet.create({
   arrow: {
     width: 14,
     height: 14,
-    borderColor: '#555',
+    borderColor: palette.accent,
     borderBottomWidth: 1,
     borderLeftWidth: 1
   },
@@ -90,8 +85,8 @@ const PIPStyle = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderBottomColor: '#ccc',
-    borderBottomWidth: StyleSheet.hairlineWidth
+    borderBottomColor: border.color,
+    borderBottomWidth: border.width
   },
   refineTitle: {
     fontWeight: 'bold',
@@ -102,7 +97,7 @@ const PIPStyle = StyleSheet.create({
     color: palette.secondary
   },
   selectedValueStyle: {
-    color: '#999',
+    color: palette.primary,
     fontSize: 13,
     marginTop: 3,
     maxWidth: 300
@@ -110,8 +105,8 @@ const PIPStyle = StyleSheet.create({
   secondLevelHeader: {
     height: 50,
     paddingHorizontal: 10,
-    borderBottomColor: '#aaa',
-    borderBottomWidth: 1,
+    borderBottomColor: border.color,
+    borderBottomWidth: border.width,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -122,15 +117,15 @@ const PIPStyle = StyleSheet.create({
     height: 50,
     paddingLeft: 10,
     justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee'
+    borderBottomWidth: border.width,
+    borderBottomColor: border.color
   },
   secondLevelText: {
     fontSize: 16
   },
   tabView: {
     flexDirection: 'row',
-    borderBottomWidth: 1,
+    borderBottomWidth: border.width,
     borderBottomColor: border.color
   },
   tab: {
@@ -166,19 +161,21 @@ export interface ProductIndexProps {
   keyword?: string;
   renderNoResult?: any;
   productQuery?: CommerceTypes.ProductQuery;
+  title?: string;
 }
 
 export interface ProductIndexState {
   isLoading: boolean;
+  isMultiColumn: boolean;
 }
 
 const renderProductIndex = (indexProps: any) => {
-  return <PirateProductIndex {...indexProps} />;
+  return <ProductIndex {...indexProps} />;
 };
 
 const renderSearch = (indexProps: any, keyword: string, renderNoResult: any) => {
   return (
-    <PirateProductIndexSearch {...indexProps} keyword={keyword} renderNoResult={renderNoResult} />
+    <ProductIndexSearch {...indexProps} keyword={keyword} renderNoResult={renderNoResult} />
   );
 };
 
@@ -195,7 +192,8 @@ class PSProductIndex extends Component<ProductIndexProps, ProductIndexState> {
     super(props);
 
     this.state = {
-      isLoading: false
+      isLoading: false,
+      isMultiColumn: false
     };
   }
 
@@ -204,8 +202,14 @@ class PSProductIndex extends Component<ProductIndexProps, ProductIndexState> {
     this.selectedSortingOption = data.selectedSortingOption;
     this.fullCategoryId = data.fullCategoryId;
 
-    if (data.title) {
-      this.props.navigator.setTitle({ title: data.title });
+    let newTitle = data.title || this.props.title;
+
+    if (newTitle) {
+      if (data.total) {
+        newTitle += ' (' + data.total + ')';
+      }
+
+      this.props.navigator.setTitle({ title: newTitle });
     }
   }
 
@@ -235,12 +239,9 @@ class PSProductIndex extends Component<ProductIndexProps, ProductIndexState> {
       const image = (item.images || []).find(img => !!img.uri);
 
       return (
-        <PSProductItem
-          navigator={this.props.navigator}
-          format={'horizontalList'}
+        <ProductItem
           image={image}
-          reviewValue={get(item, 'review.statistics.averageRating')}
-          reviewCount={get(item, 'review.statistics.reviewCount')}
+          buttonProps={{palette}}
           onPress={this.onPress(item)}
           style={PIPStyle.productItem}
           {...item}
@@ -256,6 +257,8 @@ class PSProductIndex extends Component<ProductIndexProps, ProductIndexState> {
         showSortModal={showSortModal}
         commerceData={commerceData}
         keyword={this.props.keyword}
+        handleColumnToggle={this.toggleColumnLayout}
+        isMultiColumn={this.state.isMultiColumn}
       />
     );
   }
@@ -267,12 +270,8 @@ class PSProductIndex extends Component<ProductIndexProps, ProductIndexState> {
 
     const { keyword, renderNoResult } = this.props;
 
-    const formatProps: any = {
-      format: 'list'
-    };
-
     const indexProps: any = {
-      ...formatProps,
+      columns: this.state.isMultiColumn ? 2 : 1,
       listStyle: PIPStyle.container,
       renderRefineActionBar: this.renderRefineActionBar,
       commerceDataSource: dataSource,
@@ -281,7 +280,8 @@ class PSProductIndex extends Component<ProductIndexProps, ProductIndexState> {
       modalType: 'half-screen',
       filterType: 'drilldown',
       mergeSortToFilter: true,
-      disableReviews: true,
+      disableReviews: false,
+      reviewDataSource,
       handleFilterReset: this.handleFilterReset,
       FilterListDrilldownProps: {
         resetButtonTextStyle: PIPStyle.resetButtonText,
@@ -304,6 +304,16 @@ class PSProductIndex extends Component<ProductIndexProps, ProductIndexState> {
           ? renderSearch(indexProps, keyword, renderNoResult)
           : renderProductIndex(indexProps)}
       </View>
+    );
+  }
+
+  toggleColumnLayout = (): void => {
+    this.setState(
+      (prevState: Readonly<ProductIndexState>): Pick<ProductIndexState, 'isMultiColumn'> => {
+        return {
+          isMultiColumn: !prevState.isMultiColumn
+        };
+      }
     );
   }
 

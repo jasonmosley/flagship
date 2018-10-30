@@ -1,3 +1,5 @@
+import { StyleSheet } from 'react-native';
+
 export const grays = {
   one: '#f5f5f5',
   two: '#e9e9e9',
@@ -15,15 +17,15 @@ export const color = {
   lightGray: grays.three,
   gray: grays.six,
   darkGray: grays.eight,
-  green: 'rgb(74,157,99)',
-  yellow: '#fff200',
+  green: '#227d74',
+  yellow: '#dab10e',
   white: '#ffffff',
-  red: 'rgb(208,2,27)'
+  red: '#d0021b'
 };
 
 export const palette = {
-  primary: color.darkGray,
-  secondary: color.green,
+  primary: color.green,
+  secondary: color.darkGray,
   accent: color.yellow,
   error: color.red,
   background: color.white,
@@ -55,6 +57,9 @@ export const padding = {
 
 export const border = {
   color: color.lightGray,
-  width: 1,
+  width: StyleSheet.hairlineWidth,
   radius: 3
 };
+
+// Number of columns to show on product index pages, use 1 for a list view
+export const pipColumns = 1;

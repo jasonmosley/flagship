@@ -20,7 +20,7 @@ import {
 import { signOutButton } from '../lib/navStyles';
 import { navBarHide, navBarTabLanding } from '../styles/Navigation';
 import withAccount, { AccountProps } from '../providers/accountProvider';
-import { color, palette } from '../styles/variables';
+import { border, palette } from '../styles/variables';
 import { Grid } from '@brandingbrand/fscomponents';
 import translate, { translationKeys } from '../lib/translations';
 
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   gridLine: {
-    backgroundColor: color.lightGray
+    backgroundColor: border.color
   }
 });
 
@@ -135,10 +135,11 @@ class Account extends Component<AccountScreenProps, AccountScreenState> {
   }
 
   render(): JSX.Element {
+    const { navigator } = this.props;
     if (!this.props.account.isLoggedIn) {
       return (
         <SignIn
-          navigator={this.props.navigator}
+          navigator={navigator}
           onNav={this.props.onNav}
           onSignInSuccess={this.onSignInSuccess}
         />
@@ -148,7 +149,10 @@ class Account extends Component<AccountScreenProps, AccountScreenState> {
     }
 
     return (
-      <PSScreenWrapper hideGlobalBanner={true}>
+      <PSScreenWrapper
+        hideGlobalBanner={true}
+        navigator={navigator}
+      >
         <Grid
           style={styles.grid}
           columns={2}

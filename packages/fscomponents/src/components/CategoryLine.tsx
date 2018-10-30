@@ -15,23 +15,34 @@ import { TouchableHighlightLink } from './TouchableHighlightLink';
 import { style as S } from '../styles/CategoryLine';
 
 export interface CategoryLineProps extends CommerceTypes.Category {
-  onPress?: (item: CommerceTypes.Category) => void;
-  style?: StyleProp<ViewStyle>;
-  titleStyle?: StyleProp<TextStyle>;
-  underlayColor?: string;
-  imageStyle?: StyleProp<ImageStyle>;
   accessorySrc?: ImageURISource;
   accessoryStyle?: StyleProp<ImageStyle>;
   href?: string;
+  imageStyle?: StyleProp<ImageStyle>;
+  onPress?: (item: CommerceTypes.Category) => void;
+  showAccessory?: boolean;
+  renderAccessory?: () => React.ReactNode;
+  showImage?: boolean;
+  style?: StyleProp<ViewStyle>;
+  titleStyle?: StyleProp<TextStyle>;
+  underlayColor?: string;
 }
 
 export class CategoryLine extends PureComponent<CategoryLineProps> {
+  static defaultProps: Partial<CategoryLineProps> = {
+    showAccessory: true,
+    showImage: true
+  };
+
   render(): JSX.Element {
     const {
+      renderAccessory,
+      showAccessory,
       accessorySrc,
       accessoryStyle,
       href,
       image,
+      showImage,
       imageStyle,
       style,
       title,
@@ -47,11 +58,14 @@ export class CategoryLine extends PureComponent<CategoryLineProps> {
         href={href}
       >
         <View style={S.rowInner}>
-          {image && <Image source={image} style={imageStyle} />}
+          {showImage && image && <Image source={image} style={imageStyle} />}
           <Text style={[S.buttonText, titleStyle]}>
             {title}
           </Text>
-          {accessorySrc && <Image source={accessorySrc} style={accessoryStyle} />}
+          {showAccessory && accessorySrc &&
+            <Image source={accessorySrc} style={accessoryStyle} resizeMode='contain' />
+          }
+          {renderAccessory && renderAccessory()}
         </View>
       </TouchableHighlightLink>
     );

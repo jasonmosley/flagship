@@ -1,10 +1,16 @@
 import React, { Component } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
-import { MultiCarousel } from '@brandingbrand/fscomponents';
-import PSProductItem, { PSProductItemProps } from './PSProductItem';
-import { color, fontSize } from '../styles/variables';
+import {
+  MultiCarousel,
+  ProductItem,
+  ProductItemProps
+} from '@brandingbrand/fscomponents';
+import { fontSize, palette } from '../styles/variables';
 
 const styles = StyleSheet.create({
+  brandText: {
+    color: palette.secondary
+  },
   container: {},
   item: {
     marginLeft: 15
@@ -16,6 +22,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5
   },
   productTitle: {
+    color: palette.secondary,
     fontWeight: 'normal',
     fontSize: 13
   },
@@ -24,7 +31,8 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     justifyContent: 'center',
-    marginTop: 5
+    marginTop: 5,
+    color: palette.secondary
   },
   priceContainer: {
     marginBottom: 0
@@ -35,7 +43,7 @@ const styles = StyleSheet.create({
     marginTop: 5
   },
   promoText: {
-    color: color.red,
+    color: palette.accent,
     fontSize: fontSize.small,
     fontStyle: 'normal'
   },
@@ -46,15 +54,17 @@ const styles = StyleSheet.create({
 
 export interface PSProductCarouselProps {
   style?: StyleProp<ViewStyle>;
-  items: PSProductItemProps[];
+  items: ProductItemProps[];
 }
 
 export default class PSProductCarousel extends Component<
   PSProductCarouselProps
-> {
+  > {
   render(): JSX.Element {
     return (
       <MultiCarousel
+        brandStyle={styles.brandText}
+        buttonProps={{ palette }}
         itemsPerPage={2}
         peekSize={50}
         style={[styles.container, this.props.style]}
@@ -66,18 +76,16 @@ export default class PSProductCarousel extends Component<
     );
   }
 
-  renderItem = (item: PSProductItemProps) => {
+  renderItem = (item: ProductItemProps) => {
     return (
       <View style={styles.item}>
-        <PSProductItem
-          format='verticalTopSwatches'
+        <ProductItem
           titleStyle={styles.productTitle}
           priceStyle={styles.productPrice}
-          priceTextStyle={styles.productPriceText}
-          priceContainerStyle={styles.priceContainer}
           reviewStyle={styles.reviews}
           promoStyle={styles.promoText}
-          promosContainerStyle={styles.promosContainer}
+          buttonProps={{ palette }}
+          promoContainerStyle={styles.promosContainer}
           reviewIndicatorProps={{ itemSize: 15 } as any}
           {...item}
         />

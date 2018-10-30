@@ -1,4 +1,3 @@
-import * as variables from '../styles/variables';
 import React, { Component } from 'react';
 import { Form } from '@brandingbrand/fscomponents';
 // @ts-ignore TODO: Add types for tcomb-form-native
@@ -7,10 +6,12 @@ import { merge } from 'lodash-es';
 import TouchId from 'react-native-touch-id';
 import { Image, Platform, StyleSheet, Text, View } from 'react-native';
 import { EMAIL_REGEX } from '../lib/constants';
-import PSButton from './PSButton';
 import { textboxWithRightIcon } from '../lib/formTemplate';
 import formFieldStyles from '../styles/FormField';
 import translate, { translationKeys } from '../lib/translations';
+import * as variables from '../styles/variables';
+
+import PSButton from './PSButton';
 
 const touchIdIcon = require('../../assets/images/touchId.png');
 const faceIdIcon = require('../../assets/images/faceId.png');
@@ -19,7 +20,7 @@ const noop = () => undefined;
 
 const styles = StyleSheet.create({
   formContainer: {
-    borderTopColor: variables.color.lightGray,
+    borderTopColor: variables.border.color,
     borderTopWidth: 1
   },
   button: {
@@ -29,12 +30,12 @@ const styles = StyleSheet.create({
     height: 20
   },
   errorContainer: {
-    backgroundColor: variables.grays.one,
+    backgroundColor: variables.palette.surface,
     padding: variables.padding.base
   },
   errorText: {
     fontWeight: 'bold',
-    color: variables.color.red
+    color: variables.palette.error
   }
 });
 
@@ -183,6 +184,7 @@ export default class PSSignInForm extends Component<
   getFormFieldOptions = (fieldStyles: { [key: string]: any }): { [key: string]: any } => {
     const fieldOptions = {
       email: {
+        template: textboxWithRightIcon,
         placeholder: 'Required',
         placeholderTextColor: variables.color.gray,
         returnKeyType: 'next',
@@ -215,11 +217,11 @@ export default class PSSignInForm extends Component<
         label: 'Remember Me',
         onTintColor: variables.palette.secondary,
         // Android changes the color of the thumb switch when toggled on to be a conflicting green
-        thumbTintColor: Platform.OS === 'android' ? variables.grays.two : undefined,
+        thumbTintColor: Platform.OS === 'android' ? variables.palette.surface : undefined,
         stylesheet: merge({}, t.form.Form.stylesheet, fieldStyles, {
           formGroup: {
             normal: {
-              backgroundColor: variables.grays.one,
+              backgroundColor: variables.palette.surface,
               paddingTop: variables.padding.base,
               paddingBottom: variables.padding.base,
               borderBottomWidth: 0
@@ -282,14 +284,13 @@ export default class PSSignInForm extends Component<
           <PSButton
             title={this.props.signInButtonText || 'Sign In'}
             onPress={this.handleSignInPress}
-            primary={true}
             loading={isLoading}
             style={styles.button}
           />
           <PSButton
             title={translate.string(translationKeys.account.actions.forgotPassword.actionBtn)}
             onPress={this.props.forgotPassword}
-            link={true}
+            link
             style={[styles.button, styles.forgotPasswordButton]}
           />
         </View>

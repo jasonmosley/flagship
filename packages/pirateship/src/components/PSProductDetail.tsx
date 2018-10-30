@@ -7,9 +7,8 @@ import {
   View
 } from 'react-native';
 import { cloneDeep, find, findIndex } from 'lodash-es';
-import { Navigator } from 'react-native-navigation';
-
 import {
+  Loading,
   ReviewIndicator,
   ShareButton,
   Swatches,
@@ -25,7 +24,6 @@ import withCart, { CartProps } from '../providers/cartProvider';
 import { RecentlyViewedProps } from '../providers/recentlyViewedProvider';
 
 import PSButton from './PSButton';
-import PSLoading from './PSLoading';
 import PSProductCarousel from './PSProductCarousel';
 import PSStepper from './PSStepper';
 import PSHTMLView from './PSHTMLView';
@@ -38,9 +36,10 @@ import * as variables from '../styles/variables';
 import {
   CommerceDataSource,
   CommerceTypes,
-  ReviewDataSource,
-  ReviewTypes
+  ReviewDataSource
 } from '@brandingbrand/fscommerce';
+
+type Navigator = import ('react-native-navigation').Navigator;
 
 const icons = {
   zoom: require('../../assets/images/icon-zoom.png'),
@@ -93,20 +92,20 @@ const styles = StyleSheet.create({
   savings: {
     fontSize: 13,
     fontWeight: '500',
-    color: variables.color.red,
+    color: variables.palette.accent,
     paddingTop: 5
   },
   zoomCarouselDotStyle: {
     height: 7,
     width: 7,
     borderRadius: 4,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: variables.palette.onPrimary,
     marginHorizontal: 3,
     marginVertical: 5,
     borderWidth: 0.5
   },
   zoomCarouselDotActiveStyle: {
-    backgroundColor: '#000000'
+    backgroundColor: variables.palette.primary
   },
   zoomCarouselZoomButtonStyle: {
     right: 15,
@@ -126,12 +125,12 @@ const styles = StyleSheet.create({
     paddingBottom: variables.padding.base
   },
   tabs: {
-    borderTopWidth: 1,
-    borderColor: '#EEEEEE'
+    borderTopWidth: variables.border.width,
+    borderColor: variables.border.color
   },
   tabRow: {
-    borderBottomWidth: 1,
-    borderColor: '#EEEEEE',
+    borderBottomWidth: variables.border.width,
+    borderColor: variables.border.color,
     paddingRight: 15
   },
   modalText: {
@@ -168,10 +167,10 @@ const styles = StyleSheet.create({
   iconBarSeperator: {
     width: 1,
     height: 30,
-    backgroundColor: variables.color.lightGray
+    backgroundColor: variables.border.color
   },
   carouselTitle: {
-    color: variables.color.darkGray,
+    color: variables.palette.onBackground,
     fontSize: 17,
     fontWeight: '700',
     paddingLeft: 15,
@@ -210,6 +209,14 @@ const styles = StyleSheet.create({
   atcImage: {
     height: 15,
     width: 15
+  },
+  quantityText: {
+    fontWeight: '600',
+    fontSize: 15,
+    paddingBottom: 6
+  },
+  quantityView: {
+    marginTop: 15
   }
 });
 
@@ -219,6 +226,7 @@ export interface UnwrappedPSProductDetailProps extends RecentlyViewedProps {
   navigator: Navigator;
   onAddToCart?: (data: any) => any; // TODO: Update this with real types
   onOpenHTMLView?: (html: string, title?: string) => void;
+  reviewDataSource: ReviewDataSource;
 }
 
 export type PSProductDetailProps = UnwrappedPSProductDetailProps &
@@ -242,7 +250,7 @@ export type PSProductDetailComponentInternalProps = UnwrappedPSProductDetailProp
 class PSProductDetailComponent extends Component<
   PSProductDetailComponentInternalProps,
   PSProductDetailState
-> {
+  > {
   static getDerivedStateFromProps(nextProps: PSProductDetailComponentInternalProps):
     Partial<PSProductDetailState> | null {
 
@@ -263,7 +271,7 @@ class PSProductDetailComponent extends Component<
     }
 
     const variant = find(commerceData.variants, { id: commerceData.id })
-     || commerceData.variants[0];
+      || commerceData.variants[0];
 
     if (variant) {
       return {
@@ -312,7 +320,7 @@ class PSProductDetailComponent extends Component<
     }
   }
 
-  updateOption = (name: string, value: string) => {
+  updateOption = (name: string) => (value: string) => {
     if (this.props.commerceData) {
       const { variants } = this.props.commerceData;
       const { optionValues } = this.state;
@@ -329,7 +337,11 @@ class PSProductDetailComponent extends Component<
       // Search for matching variant
       const variant = find(variants, { optionValues: newOptionValues }) as any;
 
-      if (variant && variant.id && dataSourceConfig.type === 'commercecloud') {
+      if (
+        variant &&
+        variant.id &&
+        ['commercecloud', 'mock'].indexOf(dataSourceConfig.type) !== -1
+      ) {
         this.props.navigator.push({
           screen: 'ProductDetail',
           passProps: {
@@ -470,6 +482,35 @@ class PSProductDetailComponent extends Component<
     return <ShareButton content={content} />;
   }
 
+  renderSwatches = (options: CommerceTypes.Option[]): React.ReactNode => {
+    const { optionValues } = this.state;
+
+    return (
+      <View>
+        {options.map((option, index) => {
+          const defaultOption = find(optionValues, { name: option.id });
+
+          if (Array.isArray(option.values)
+            && option.values.length === 1
+            && option.values[0].name === 'Default Title') {
+            return null;
+          }
+
+          return (
+            <Swatches
+              key={index}
+              title={option.name}
+              items={option.values}
+              defaultValue={defaultOption ? defaultOption.value : undefined}
+              onChangeSwatch={this.updateOption(option.id)}
+              label={true}
+            />
+          );
+        })}
+      </View>
+    );
+  }
+
   // tslint:disable cyclomatic-complexity
   render(): JSX.Element {
     // TODO: Remove type assertion when we update this to match the commerce schema
@@ -477,7 +518,7 @@ class PSProductDetailComponent extends Component<
     const commerceData = this.props.commerceData as CommerceTypes.Product & { [key: string]: any };
 
     if (!commerceData) {
-      return <PSLoading style={{ marginTop: 80 }} />;
+      return <Loading style={{ marginTop: 80 }} />;
     }
 
     this.trackImpression();
@@ -494,7 +535,6 @@ class PSProductDetailComponent extends Component<
       description = '',
       images = []
     } = commerceData;
-    const { optionValues } = this.state;
 
     // Update Image src (should be updated in ZoomCarousel component)
     const imagesSources = images.map((image: any) => {
@@ -568,26 +608,11 @@ class PSProductDetailComponent extends Component<
           </View>
         </View>
         <View style={styles.edgePadding}>
-          {options && (
-            <View>
-              {options.map((option, index) => {
-                const defaultOption = find(optionValues, { name: option.id });
-                return (
-                  <Swatches
-                    key={index}
-                    title={option.name}
-                    items={option.values}
-                    defaultValue={defaultOption ? defaultOption.value : undefined}
-                    onChangeSwatch={this.updateOption.bind(this, option.id)}
-                  />
-                );
-              })}
-            </View>
-          )}
-          <View>
+          {options && this.renderSwatches(options)}
+          <View style={styles.quantityView}>
             <View style={{ paddingBottom: 20 }}>
               <Text
-                style={{ fontWeight: '600', fontSize: 15, paddingBottom: 6 }}
+                style={styles.quantityText}
               >
                 {translate.string(translationKeys.item.qty)}:
               </Text>
@@ -687,7 +712,7 @@ class PSProductDetailComponent extends Component<
         titleStyle={{
           fontWeight: '600',
           fontSize: 15,
-          color: '#ffffff'
+          color: variables.palette.onPrimary
         }}
       />
     );
@@ -718,8 +743,6 @@ class PSProductDetailComponent extends Component<
 
 export const PSProductDetail = withProductDetailData<UnwrappedPSProductDetailProps>(
   async (DataSource: CommerceDataSource, props: UnwrappedPSProductDetailProps) =>
-    DataSource.fetchProduct(props.id),
-    async (DataSource: ReviewDataSource, query: ReviewTypes.ReviewQuery) =>
-    DataSource.fetchReviewDetails(query)
-// TODO: Update cart provider to separate out types correctly
+    DataSource.fetchProduct(props.id)
+  // TODO: Update cart provider to separate out types correctly
 )(withCart(PSProductDetailComponent) as any);

@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import PSLoading from '../components/PSLoading';
+import { Loading } from '@brandingbrand/fscomponents';
 import PSSignInForm from '../components/PSSignInForm';
 import PSScreenWrapper from '../components/PSScreenWrapper';
 import { backButton } from '../lib/navStyles';
 import { navBarHide } from '../styles/Navigation';
 import { NavButton, NavigatorStyle, ScreenProps } from '../lib/commonTypes';
 import withAccount, { AccountProps } from '../providers/accountProvider';
-import { color, fontSize, grays, padding } from '../styles/variables';
+import { fontSize, padding, palette } from '../styles/variables';
 import PSButton from '../components/PSButton';
 import translate, { translationKeys } from '../lib/translations';
 
@@ -19,7 +18,7 @@ const closeIcon = require('../../assets/images/close.png');
 
 const styles = StyleSheet.create({
   screenContainer: {
-    backgroundColor: grays.one,
+    backgroundColor: palette.surface,
     paddingTop: padding.base
   },
   container: {
@@ -27,7 +26,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: grays.one
+    backgroundColor: palette.surface
   },
   headerContainer: {
     paddingHorizontal: padding.base
@@ -61,7 +60,7 @@ const styles = StyleSheet.create({
     fontWeight: 'normal'
   },
   dismissButtonContainer: {
-    backgroundColor: grays.one,
+    backgroundColor: palette.surface,
     minHeight: 40,
     margin: padding.narrow
   },
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: color.white
+    backgroundColor: palette.background
   }
 });
 
@@ -109,10 +108,14 @@ class SignIn extends Component<SignInScreenProps, SignInScreenState> {
 
   render(): JSX.Element {
     if (this.state.isLoading) {
-      return <PSLoading style={styles.loading} />;
+      return <Loading style={styles.loading} />;
     }
 
-    const { saveCredentials, getCredentials } = this.props;
+    const {
+      saveCredentials,
+      getCredentials,
+      navigator
+    } = this.props;
     /// default to close
     const dismissButtonStyle = this.props.dismissButtonStyle || DismissButtonStyle.Close;
 
@@ -124,6 +127,7 @@ class SignIn extends Component<SignInScreenProps, SignInScreenState> {
         scrollViewProps={{
           keyboardShouldPersistTaps: 'handled'
         }}
+        navigator={navigator}
       >
         <View style={styles.dismissButtonContainer}>
           {this.props.dismissible && (

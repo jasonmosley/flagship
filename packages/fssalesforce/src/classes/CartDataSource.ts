@@ -236,10 +236,15 @@ export class DemandwareCartDataSource extends DemandwareBase
    *
    * @param {string} productId - An identifier corresponding to the product to be added to cart
    * @param {number} qty - The number of said product to be added to the cart
+   * @param {Product} product - A product object representing the product to be added to the cart
    * @returns {Promise.<Cart>} A Promise representing a noramlized cart after the product
    * has been added.
    */
-  async addToCart(productId: string, qty: number = 1): Promise<FSCommerceTypes.Cart> {
+  async addToCart(
+    productId: string,
+    qty: number = 1,
+    product?: FSCommerceTypes.Product
+  ): Promise<FSCommerceTypes.Cart> {
     const cartData = await this.fetchCart({ noExtraData: true });
     if (!cartData || !cartData.id) {
       throw new Error(kErrorMessageNoData);
@@ -259,13 +264,14 @@ export class DemandwareCartDataSource extends DemandwareBase
       }
     );
 
+    const products = await this.mutateCartDataWithProductDetail(data);
+    (data as BasketWithProductDetails).product_details = products;
     const normalizedCartData = demandwareNormalizer.cart(data, this.storeCurrencyCode);
+
     if (!normalizedCartData) {
       throw new Error(kErrorMessageNoData);
     }
 
-    const products = await this.mutateCartDataWithProductDetail(data);
-    (data as BasketWithProductDetails).product_details = products;
     return runMiddleware(
       data as BasketWithProductDetails,
       normalizedCartData,
@@ -507,13 +513,14 @@ export class DemandwareCartDataSource extends DemandwareBase
       `/baskets/${encodeURIComponent(basketId)}/items/${itemId}`
     );
 
+    const products = await this.mutateCartDataWithProductDetail(data);
+    (data as BasketWithProductDetails).product_details = products;
     const normalizedData = demandwareNormalizer.cart(data, this.storeCurrencyCode);
+
     if (!normalizedData) {
       throw new Error(kErrorMessageNoData);
     }
 
-    const products = await this.mutateCartDataWithProductDetail(data);
-    (data as BasketWithProductDetails).product_details = products;
     return runMiddleware(
       data as BasketWithProductDetails,
       normalizedData,
@@ -543,13 +550,14 @@ export class DemandwareCartDataSource extends DemandwareBase
       { data: { quantity: qty } }
     );
 
+    const products = await this.mutateCartDataWithProductDetail(data);
+    (data as BasketWithProductDetails).product_details = products;
     const normalizedData = demandwareNormalizer.cart(data, this.storeCurrencyCode);
+
     if (!normalizedData) {
       throw new Error(kErrorMessageNoData);
     }
 
-    const products = await this.mutateCartDataWithProductDetail(data);
-    (data as BasketWithProductDetails).product_details = products;
     return runMiddleware(
       data as BasketWithProductDetails,
       normalizedData,

@@ -1,33 +1,31 @@
 import React, { Component } from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, Text, View } from 'react-native';
 
-import { Button, PromoForm } from '@brandingbrand/fscomponents';
+import { PromoForm } from '@brandingbrand/fscomponents';
 import { NavigatorStyle, ScreenProps } from '../lib/commonTypes';
 import { navBarFullBleed } from '../styles/Navigation';
 import { CommerceTypes } from '@brandingbrand/fscommerce';
 
+import PSButton from '../components/PSButton';
 import PSScreenWrapper from '../components/PSScreenWrapper';
 import PSCartItem from '../components/PSCartItem';
 import PSTotals from '../components/PSTotals';
 import PSRecentlyViewedCarousel from '../components/PSRecentlyViewedCarousel';
 
-import { border, color, palette } from '../styles/variables';
+import { border, palette } from '../styles/variables';
 import GlobalStyle from '../styles/Global';
 
 import withAccount, { AccountProps } from '../providers/accountProvider';
 import withCart, { CartProps } from '../providers/cartProvider';
-import withRecentlyViewed, { RecentlyViewedProps } from '../providers/recentlyViewedProvider';
+import withRecentlyViewed, {
+  RecentlyViewedProps
+} from '../providers/recentlyViewedProvider';
 import Analytics from '../lib/analytics';
 import translate, { translationKeys } from '../lib/translations';
 
 const CartStyle = StyleSheet.create({
   loading: {
-    backgroundColor: color.white,
+    backgroundColor: palette.background,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
@@ -38,7 +36,8 @@ const CartStyle = StyleSheet.create({
     fontWeight: 'bold'
   },
   title: {
-    marginTop: 15
+    marginTop: 15,
+    color: palette.secondary
   },
   cartContainer: {
     marginHorizontal: 15
@@ -48,24 +47,21 @@ const CartStyle = StyleSheet.create({
     paddingBottom: 20,
     marginVertical: 15,
     borderBottomColor: border.color,
-    borderBottomWidth: 1
+    borderBottomWidth: border.width
   },
   promoContainer: {
     marginTop: 10,
     paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#000'
+    borderTopWidth: border.width,
+    borderTopColor: border.color
   },
   fieldsStyleConfig: {
     height: 50,
     borderRadius: 0,
     fontSize: 14,
     paddingHorizontal: 10,
-    borderTopColor: '#CCC',
-    borderBottomColor: '#CCC',
-    borderLeftColor: '#CCC',
-    borderRightColor: '#CCC',
-    borderWidth: 1
+    borderColor: border.color,
+    borderWidth: border.width
   },
   fieldsStyleErrorConfig: {
     height: 50,
@@ -79,11 +75,11 @@ const CartStyle = StyleSheet.create({
     borderWidth: 1
   },
   submitButtonStyle: {
-    backgroundColor: '#333',
+    backgroundColor: palette.primary,
     height: 50
   },
   submitTextStyle: {
-    color: '#FFF'
+    color: palette.onPrimary
   },
   summaryContainer: {
     marginBottom: 20
@@ -91,13 +87,13 @@ const CartStyle = StyleSheet.create({
   lastItemTextStyle: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: palette.secondary
+    color: palette.primary
   },
   checkoutButton: {
-    borderWidth: 2,
-    borderColor: 'black',
-    borderRadius: 5,
-    marginBottom: 10
+    borderWidth: 0,
+    borderRadius: 3,
+    marginBottom: 10,
+    backgroundColor: palette.accent
   },
   apCheckoutButton: {
     paddingVertical: 20,
@@ -105,7 +101,7 @@ const CartStyle = StyleSheet.create({
     marginBottom: 20
   },
   checkoutButtonTitle: {
-    color: 'black'
+    color: 'white'
   },
   apCheckoutButtonTitle: {
     color: 'white'
@@ -124,7 +120,7 @@ const CartStyle = StyleSheet.create({
     borderWidth: 0
   },
   savingsText: {
-    color: color.red
+    color: palette.accent
   },
   footerButtonsContainer: {
     flex: 1,
@@ -153,7 +149,7 @@ const CartStyle = StyleSheet.create({
     marginBottom: 20
   },
   emptyText: {
-    color: palette.primary,
+    color: palette.secondary,
     marginTop: 10,
     fontSize: 15
   },
@@ -172,10 +168,11 @@ const CartStyle = StyleSheet.create({
   signIn: {
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: border.color
+    borderColor: border.color,
+    backgroundColor: palette.secondary
   },
   signInButtonTitle: {
-    color: palette.primary,
+    color: 'white',
     fontSize: 15,
     fontWeight: 'bold'
   },
@@ -184,7 +181,7 @@ const CartStyle = StyleSheet.create({
     fontWeight: 'bold'
   },
   emptyCartTopContainer: {
-    backgroundColor: color.lightGray,
+    backgroundColor: palette.surface,
     paddingHorizontal: 15,
     flex: 1,
     paddingBottom: 20
@@ -196,7 +193,7 @@ const CartStyle = StyleSheet.create({
     backgroundColor: palette.primary
   },
   scrollView: {
-    backgroundColor: color.white
+    backgroundColor: palette.background
   }
 });
 
@@ -209,9 +206,9 @@ const icons = {
 
 export interface CartScreenProps
   extends ScreenProps,
-    AccountProps,
-    CartProps,
-    RecentlyViewedProps {}
+  AccountProps,
+  CartProps,
+  RecentlyViewedProps { }
 
 class Cart extends Component<CartScreenProps> {
   static navigatorStyle: NavigatorStyle = navBarFullBleed;
@@ -223,6 +220,7 @@ class Cart extends Component<CartScreenProps> {
   }
 
   render(): JSX.Element {
+    const { navigator } = this.props;
     const { cartData, isLoading } = this.props.cart;
     let cart;
 
@@ -241,7 +239,7 @@ class Cart extends Component<CartScreenProps> {
       this.props.navigator.setTabBadge({
         tabIndex: 1,
         badge: this.props.cart.cartCount || null,
-        badgeColor: palette.secondary
+        badgeColor: palette.primary
       });
 
       if (cartData.items.length === 0) {
@@ -257,6 +255,7 @@ class Cart extends Component<CartScreenProps> {
         scroll={!isLoading}
         style={CartStyle.container}
         scrollViewProps={{ style: CartStyle.scrollView }}
+        navigator={navigator}
       >
         {cart}
       </PSScreenWrapper>
@@ -272,7 +271,9 @@ class Cart extends Component<CartScreenProps> {
     return (
       <View style={CartStyle.cartContainer}>
         <Text style={[GlobalStyle.h1, CartStyle.title]}>
-          {translate.string(translationKeys.cart.cartCount, { count: cartData.items.length })}
+          {translate.string(translationKeys.cart.cartCount, {
+            count: cartData.items.length
+          })}
         </Text>
 
         {cartData.items.map(i => this.renderCartItem(i))}
@@ -321,19 +322,23 @@ class Cart extends Component<CartScreenProps> {
       );
 
       login.push(
-        <Button
+        <PSButton
           key='button'
           style={CartStyle.signIn}
-          title={translate.string(translationKeys.account.actions.signIn.actionBtn)}
+          title={translate.string(
+            translationKeys.account.actions.signIn.actionBtn
+          )}
           titleStyle={CartStyle.signInButtonTitle}
-          variables={{ color: { primary: 'white' } }}
           onPress={this.signIn}
         />
       );
     }
 
     let recentProducts;
-    if (this.props.recentlyViewed.items && this.props.recentlyViewed.items.length) {
+    if (
+      this.props.recentlyViewed.items &&
+      this.props.recentlyViewed.items.length
+    ) {
       recentProducts = (
         <PSRecentlyViewedCarousel
           items={this.props.recentlyViewed.items}
@@ -352,11 +357,12 @@ class Cart extends Component<CartScreenProps> {
             {translate.string(translationKeys.cart.emptyCartDetails)}
           </Text>
 
-          <Button
+          <PSButton
             style={CartStyle.continueShopping}
-            title={translate.string(translationKeys.cart.actions.continueShopping.actionBtn)}
+            title={translate.string(
+              translationKeys.cart.actions.continueShopping.actionBtn
+            )}
             titleStyle={CartStyle.continueShoppingButtonTitle}
-            variables={{ color: { primary: palette.primary } }}
             onPress={this.continueShopping}
           />
 
@@ -392,9 +398,15 @@ class Cart extends Component<CartScreenProps> {
   }
 
   continueShopping = () => {
-    this.props.navigator.switchToTab({
-      tabIndex: 0
-    });
+    if (Platform.OS !== 'web') {
+      this.props.navigator.switchToTab({
+        tabIndex: 0
+      });
+    } else {
+      this.props.navigator.push({
+        screen: 'Shop'
+      });
+    }
   }
 
   renderCartItem = (item: any): JSX.Element => {
@@ -492,28 +504,19 @@ class Cart extends Component<CartScreenProps> {
   renderActionBar = () => {
     return (
       <View>
-        <Button
+        <PSButton
           icon={icons.secure}
           iconStyle={CartStyle.checkoutIcon}
           titleStyle={CartStyle.checkoutButtonTitle}
-          variables={{ color: { primary: palette.secondary } }}
           style={CartStyle.checkoutButton}
-          title={translate.string(translationKeys.cart.actions.checkout.actionBtn)}
+          title={translate.string(
+            translationKeys.cart.actions.checkout.actionBtn
+          )}
           onPress={this.startCheckout(false)}
         />
       </View>
     );
   }
-
-  /*<Button
-    icon={icons.applePay}
-    iconStyle={CartStyle.apCheckoutIconAP}
-    title='Pay'
-    titleStyle={CartStyle.apCheckoutButtonTitle}
-    variables={{ color: { primary: 'black' } }}
-    style={CartStyle.apCheckoutButton}
-    onPress={this.startCheckout(true)}
-  />*/
 
   startCheckout = (useApplePay: boolean): any => {
     return (): void => {

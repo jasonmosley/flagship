@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { Keyboard, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import {
-  Button,
   SearchScreen as SearchSuggestionScreen
 } from '@brandingbrand/fscomponents';
 import { CommerceTypes } from '@brandingbrand/fscommerce';
+import PSButton from '../components/PSButton';
 import PSProductCarousel from '../components/PSProductCarousel';
 import { debounce, flatten, get } from 'lodash-es';
 import { NavigatorStyle, ScreenProps } from '../lib/commonTypes';
@@ -15,7 +15,7 @@ import { handleDeeplink } from '../lib/deeplinkHandler';
 import PSScreenWrapper from '../components/PSScreenWrapper';
 import PSProductIndex from '../components/PSProductIndex';
 
-import { color, fontSize } from '../styles/variables';
+import { border, fontSize, palette } from '../styles/variables';
 import GlobalStyle from '../styles/Global';
 import { navBarHide } from '../styles/Navigation';
 import translate, { translationKeys } from '../lib/translations';
@@ -32,7 +32,7 @@ const NoSearchResultsStyle = StyleSheet.create({
   },
   modalWrap: {
     flex: 1,
-    backgroundColor: color.white
+    backgroundColor: palette.background
   },
   header: {
     fontWeight: 'bold',
@@ -48,29 +48,29 @@ const NoSearchResultsStyle = StyleSheet.create({
     marginTop: 25,
     marginBottom: 25,
     paddingBottom: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: color.lightGray
+    borderBottomWidth: border.width,
+    borderBottomColor: border.color
   },
   contactUsButton: {
-    borderWidth: 1,
-    borderColor: color.black,
-    borderRadius: 3,
-    backgroundColor: color.white,
+    borderWidth: border.width,
+    borderColor: border.color,
+    borderRadius: border.radius,
+    backgroundColor: palette.background,
     width: '48%',
     height: 40
   },
   contactUsText: {
     fontWeight: 'bold',
-    color: color.black
+    color: palette.onBackground
   },
   shopButton: {
-    backgroundColor: color.black,
+    backgroundColor: palette.primary,
     borderRadius: 3,
     width: '48%',
     height: 40
   },
   shopText: {
-    color: color.white,
+    color: palette.onPrimary,
     fontWeight: 'bold'
   },
   carouselView: {
@@ -118,6 +118,7 @@ class Search extends Component<SearchProps, SearchState> {
   }
 
   render(): JSX.Element {
+    const { navigator } = this.props;
     const result = this.state.showResult ? [] : this.state.suggestions;
 
     return (
@@ -125,6 +126,7 @@ class Search extends Component<SearchProps, SearchState> {
         scroll={false}
         hideGlobalBanner={true}
         needInSafeArea={true}
+        navigator={navigator}
       >
         <SearchSuggestionScreen
           results={result}
@@ -141,7 +143,7 @@ class Search extends Component<SearchProps, SearchState> {
             cancelTitleStyle: GlobalStyle.searchBarCancelTitleStyle,
             containerStyle: GlobalStyle.searchBarInner,
             inputTextStyle: GlobalStyle.searchBarInputTextStyle,
-            placeholder: 'Search by product, brand or part',
+            placeholder: 'Search',
             inputProps: {
               value: this.state.keyword === ' ' ? '' : this.state.keyword,
               autoCorrect: false,
@@ -183,13 +185,13 @@ class Search extends Component<SearchProps, SearchState> {
           </Text>
         ))}
         <View style={NoSearchResultsStyle.buttonContainer}>
-          <Button
+          <PSButton
             title={translate.string(translationKeys.search.noResults.actions.contact.actionBtn)}
             onPress={this.contactUs}
             style={NoSearchResultsStyle.contactUsButton}
             titleStyle={NoSearchResultsStyle.contactUsText}
           />
-          <Button
+          <PSButton
             title={
               translate.string(translationKeys.search.noResults.actions.shopByCategory.actionBtn)
             }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { Platform } from 'react-native';
-import { bvDataSource, dataSource } from '../lib/datasource';
+import { dataSource, reviewDataSource } from '../lib/datasource';
 import { NavButton, NavigatorStyle, ScreenProps } from '../lib/commonTypes';
 import { backButton } from '../lib/navStyles';
 import { navBarDefault, navBarProductDetail } from '../styles/Navigation';
@@ -44,12 +44,16 @@ class ProductDetail extends Component<ProductDetailProps> {
     const { navigator, productId } = this.props;
 
     return (
-      <PSScreenWrapper needInSafeArea={true} hideGlobalBanner={true}>
+      <PSScreenWrapper
+        needInSafeArea={true}
+        hideGlobalBanner={true}
+        navigator={navigator}
+      >
         <PSProductDetail
           id={productId}
           commerceDataSource={dataSource}
-          reviewProviderDataSource={bvDataSource}
-          commerceToReviewMap='bvProductId'
+          reviewDataSource={reviewDataSource}
+          commerceToReviewMap={'id'}
           navigator={navigator}
           onOpenHTMLView={this.onOpenHTMLView}
           addToRecentlyViewed={this.props.addToRecentlyViewed}

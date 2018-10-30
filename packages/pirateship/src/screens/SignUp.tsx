@@ -21,20 +21,20 @@ import translate, { translationKeys } from '../lib/translations';
 
 import GlobalStyle from '../styles/Global';
 import { navBarHide } from '../styles/Navigation';
-import { color, fontSize, grays, padding } from '../styles/variables';
+import { border, fontSize, padding, palette } from '../styles/variables';
 
 const cancelIcon = require('../../assets/images/x.png');
 const checkIcon = require('../../assets/images/check.png');
 
 const styles = StyleSheet.create({
   screenContainer: {
-    backgroundColor: grays.one
+    backgroundColor: palette.surface
   },
   formHeaderContainer: {
     padding: padding.base,
     paddingBottom: padding.narrow,
-    borderBottomColor: color.lightGray,
-    borderBottomWidth: 1
+    borderBottomColor: border.color,
+    borderBottomWidth: border.width
   },
   formHeader: {
     fontSize: fontSize.small,
@@ -66,15 +66,15 @@ const styles = StyleSheet.create({
     paddingLeft: 7
   },
   errorContainer: {
-    backgroundColor: grays.one,
+    backgroundColor: palette.surface,
     padding: padding.base
   },
   errorText: {
     fontWeight: 'bold',
-    color: color.red
+    color: palette.error
   },
   dismissButtonContainer: {
-    backgroundColor: grays.one,
+    backgroundColor: palette.surface,
     margin: padding.narrow
   },
   dismissButton: {
@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   divider: {
-    backgroundColor: color.lightGray,
-    height: 1
+    backgroundColor: border.color,
+    height: border.width
   },
   button: {
     margin: padding.base
@@ -129,6 +129,8 @@ class SignUp extends Component<SignUpProps, SignUpState> {
   }
 
   render(): JSX.Element {
+    const { navigator } = this.props;
+
     return (
       <PSScreenWrapper
         hideGlobalBanner={true}
@@ -137,6 +139,7 @@ class SignUp extends Component<SignUpProps, SignUpState> {
         scrollViewProps={{
           keyboardShouldPersistTaps: 'handled'
         }}
+        navigator={navigator}
       >
         {this.props.dismissible && (
           <View style={styles.dismissButtonContainer}>
@@ -212,7 +215,6 @@ class SignUp extends Component<SignUpProps, SignUpState> {
         <PSButton
           title={translate.string(translationKeys.account.actions.signUp.actionBtn)}
           onPress={this.signUp}
-          primary={true}
           style={styles.button}
           loading={this.state.isLoading}
         />

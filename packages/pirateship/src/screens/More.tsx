@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     color: palette.secondary
   },
   listItemBorder: {
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: border.width,
     borderBottomColor: border.color
   }
 });
@@ -178,8 +178,13 @@ export default class More extends Component<ScreenProps, MoreState> {
   }
 
   render(): JSX.Element {
+    const { navigator } = this.props;
+
     return (
-      <PSScreenWrapper hideGlobalBanner={true}>
+      <PSScreenWrapper
+        navigator={navigator}
+        hideGlobalBanner={true}
+      >
         <Grid
           style={styles.grid}
           columns={2}

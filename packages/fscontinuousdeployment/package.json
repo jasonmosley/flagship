@@ -1,6 +1,6 @@
 {
   "name": "@brandingbrand/fscontinuousdeployment",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Continuous deployment scripts",
   "bin": {
     "codepush": "dist/codepush.js",
@@ -13,7 +13,10 @@
   },
   "dependencies": {
     "github": "^14.0.0",
-    "request": "^2.86.0"
+    "request": "^2.88.0"
+  },
+  "devDependencies": {
+    "@types/request": "^2.47.1"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"

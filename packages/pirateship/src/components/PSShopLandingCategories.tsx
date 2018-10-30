@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import PSLoading from './PSLoading';
 import PSRow from './PSRow';
-import { color, fontSize } from '../styles/variables';
+import { border, fontSize, palette } from '../styles/variables';
 import { CommerceTypes } from '@brandingbrand/fscommerce';
+import { Loading, NavArrow } from '@brandingbrand/fscomponents';
 
 const styles = StyleSheet.create({
   loading: {
@@ -18,15 +18,15 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: color.lightGray,
+    borderBottomWidth: border.width,
+    borderBottomColor: border.color,
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 50
   },
   title: {
     fontSize: fontSize.base,
-    color: color.darkGray
+    color: palette.onBackground
   }
 });
 
@@ -43,9 +43,15 @@ export default class PSShopLandingCategories extends Component<
     this.props.onItemPress(category);
   }
 
-  renderContent(): JSX.Element | JSX.Element[] {
+  renderImage = (): JSX.Element => {
+    return (
+      <NavArrow color={palette.primary} />
+    );
+  }
+
+  renderContent(): React.ReactNode {
     if (!this.props.categories) {
-      return <PSLoading style={styles.loading} />;
+      return <Loading style={styles.loading} />;
     }
 
     return this.props.categories.map((category, i) => (
@@ -54,6 +60,7 @@ export default class PSShopLandingCategories extends Component<
         title={category.title}
         onPress={this.handleItemPress(category)}
         showImage={true}
+        renderImage={this.renderImage}
       />
     ));
   }

@@ -13,7 +13,8 @@ import {
   ViewStyle
 } from 'react-native';
 import PSGlobalBanner, { PSGlobalBannerSlotItem } from './PSGlobalBanner';
-import { color } from '../styles/variables';
+import Header from './Header';
+import { palette } from '../styles/variables';
 
 const keyboardAvoidingDefaults: KeyboardAvoidingViewProps = {
   behavior: Platform.OS === 'ios' ? 'padding' : undefined,
@@ -22,7 +23,7 @@ const keyboardAvoidingDefaults: KeyboardAvoidingViewProps = {
 };
 const styles = StyleSheet.create({
   background: {
-    backgroundColor: color.white
+    backgroundColor: palette.background
   },
   container: {
     flex: 1
@@ -42,11 +43,14 @@ export interface PSScreenWrapperProps {
   scrollViewProps?: ScrollViewProps;
 
   keyboardAvoidingViewProps?: KeyboardAvoidingViewProps;
+  // tslint:disable-next-line:whitespace
+  navigator: import('react-native-navigation').Navigator;
+  hideWebHeader?: boolean;
 }
 
 export default class PSScreenWrapper extends PureComponent<
   PSScreenWrapperProps
-> {
+  > {
   state: any = {
     safeAreaInsets: {
       top: 0,
@@ -122,6 +126,8 @@ export default class PSScreenWrapper extends PureComponent<
     const {
       children,
       hideGlobalBanner,
+      hideWebHeader = false,
+      navigator,
       needInSafeArea,
       overrideGlobalBanner,
       scroll,
@@ -152,6 +158,11 @@ export default class PSScreenWrapper extends PureComponent<
               cmsGroup='Shop'
               cmsSlot='Top-Ticker'
               override={overrideGlobalBanner}
+            />
+          )}
+          {!hideWebHeader && (
+            <Header
+              navigator={navigator}
             />
           )}
           {contents}

@@ -1,7 +1,17 @@
 module.exports = {
   desktopHost: 'https://www.brandingbrand.com',
+  name: 'PirateShip',
   displayName: 'PirateShip',
   enabledCapabilitiesIOS: [],
+  buildConfig: {
+    ios: {
+      exportTeamId: '',
+      deployScheme: '',
+      appCertDir: '',
+      provisioningProfileName: ''
+    }
+  },
+  entitlementsFileIOS: './uat.entitlements',
   googleAnalytics: {
     android: '',
     ios: ''
@@ -9,29 +19,6 @@ module.exports = {
   cmsEnvironment: 1,
   cmsPropertyId: 443,
   dataSourceConfigs: {
-    bbPlatform: {
-      type: 'bbplatform',
-      categoryFormat: 'grid',
-      apiConfig: {
-        apiHost: 'https://api.example.com'
-      }
-    },
-    commerceCloud: {
-      type: 'commercecloud',
-      categoryFormat: 'list',
-      apiConfig: {
-        clientId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        endpoint: 'https://demo-ocapi.demandware.net/s/SiteGenesis/dw/shop/v18_6',
-        storeCurrencyCode: 'USD',
-        networkClient: {
-          baseURL: 'https://demo-ocapi.demandware.net/s/SiteGenesis/dw/shop/v18_6',
-          headers: {
-            origin: 'https://demo-ocapi.demandware.net/s/SiteGenesis/dw/shop/v18_6',
-            'x-dw-client-id': 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-          }
-        }
-      }
-    },
     bazaarVoice: {
       endpoint: 'https://api.bazaarvoice.com',
       passkey: ''
@@ -91,5 +78,6 @@ module.exports = {
       string: ''
     }
   ],
-  associatedDomains: []
+  associatedDomains: [],
+  targetedDevices: 'Universal'
 };

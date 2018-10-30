@@ -8,8 +8,10 @@ import { backButton, searchButton } from '../lib/navStyles';
 import { navBarDefault } from '../styles/Navigation';
 import { NavButton, NavigatorStyle, ScreenProps } from '../lib/commonTypes';
 import { CommerceTypes } from '@brandingbrand/fscommerce';
+import { NavArrow } from '@brandingbrand/fscomponents';
+import { palette } from '../styles/variables';
 
-// Default padding for CategoryBox component from PirateComponents
+// Default padding for CategoryBox component
 const CATEGORY_BOX_DEFAULT_PADDING = 20;
 const DEFAULT_IMAGE_WIDTH = 150;
 
@@ -36,6 +38,11 @@ const listItemProps = {
     textAlign: 'left',
     height: 35,
     marginTop: 20
+  },
+  renderAccessory: (): JSX.Element => {
+    return (
+      <NavArrow color={palette.primary} style={{marginRight: 10}} />
+    );
   }
 };
 
@@ -92,7 +99,8 @@ export default class Category extends Component<PropType, StateType> {
         'Category' : 'ProductIndex';
 
       const passProps: any = {
-        categoryId: category.id
+        categoryId: category.id,
+        title: category.title || ''
       };
 
       if (screen === 'Category') {
@@ -111,7 +119,7 @@ export default class Category extends Component<PropType, StateType> {
   }
 
   render(): JSX.Element {
-    const { categoryId, format } = this.props;
+    const { categoryId, format, navigator } = this.props;
     const categoryFormat = format && format === 'list' ? 'list' : 'grid';
     const margin = categoryFormat === 'grid' ? 15 : 0;
     const itemProps: any =
@@ -135,7 +143,9 @@ export default class Category extends Component<PropType, StateType> {
     }
 
     return (
-      <PSScreenWrapper>
+      <PSScreenWrapper
+        navigator={navigator}
+      >
         <View style={{ margin }}>
           <FSCategory
             format={categoryFormat}

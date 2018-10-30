@@ -12,7 +12,7 @@ import { backButton } from '../lib/navStyles';
 import { navBarHide } from '../styles/Navigation';
 import { NavButton, NavigatorStyle, ScreenProps } from '../lib/commonTypes';
 import withAccount, { AccountProps } from '../providers/accountProvider';
-import { color, grays, padding } from '../styles/variables';
+import { border, padding, palette } from '../styles/variables';
 import PSButton from '../components/PSButton';
 import translate, { translationKeys } from '../lib/translations';
 
@@ -20,14 +20,14 @@ const accountImage = require('../../assets/images/account-image.png');
 
 const styles = StyleSheet.create({
   screenContainer: {
-    backgroundColor: grays.one
+    backgroundColor: palette.surface
   },
   container: {
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: grays.one
+    backgroundColor: palette.surface
   },
   headerContainer: {
     paddingHorizontal: padding.base
@@ -48,21 +48,21 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     alignSelf: 'stretch',
-    borderTopColor: color.lightGray,
-    borderTopWidth: 1
+    borderTopColor: border.color,
+    borderTopWidth: border.width
   },
   button: {
     margin: padding.base
   },
   errorContainer: {
-    backgroundColor: grays.one,
+    backgroundColor: palette.surface,
     padding: padding.base,
     minHeight: 40,
     alignSelf: 'stretch'
   },
   errorText: {
     fontWeight: 'bold',
-    color: color.red
+    color: palette.error
   }
 });
 
@@ -118,12 +118,14 @@ class ChangePassword extends Component<ChangePasswordScreenProps, ChangePassword
 
   render(): JSX.Element {
     const { isLoading } = this.state;
+    const { navigator } = this.props;
 
     return (
       <PSScreenWrapper
         hideGlobalBanner={true}
         needInSafeArea={true}
         style={styles.screenContainer}
+        navigator={navigator}
       >
         <View style={styles.container}>
           <Image source={accountImage} style={styles.accountImage} />
@@ -154,7 +156,6 @@ class ChangePassword extends Component<ChangePasswordScreenProps, ChangePassword
             <PSButton
               title={translate.string(translationKeys.account.actions.changePassword.actionBtn)}
               onPress={this.handleChangePasswordPress}
-              primary={true}
               style={styles.button}
               loading={isLoading}
             />

@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 import {
   Animated,
   Image,
+  ImageSourcePropType,
   ImageStyle,
   ImageURISource,
   StyleProp,
@@ -13,6 +14,7 @@ import {
   View,
   ViewStyle
 } from 'react-native';
+import { ClearButtonMode } from '../types/Store';
 import { style as S } from '../styles/SearchBar';
 
 const kCancelButtonWidthDefault = 75; // In pts
@@ -30,6 +32,7 @@ export interface SearchBarProps {
   showSearchIcon?: boolean;
   showLocator?: boolean;
   showCancel?: boolean;
+  clearButtonMode?: ClearButtonMode;
 
   // button
   searchTitle?: string;
@@ -52,6 +55,12 @@ export interface SearchBarProps {
 
   cancelButtonWidth?: number;
   cancelButtonAlwaysVisible?: boolean;
+
+  showRightBtnIcon?: boolean;
+  rightBtnIcon?: ImageSourcePropType;
+  onRightBtnPress?: () => void;
+  rightBtnStyle?: StyleProp<ViewStyle>;
+  rightBtnIconStyle?: StyleProp<ImageStyle>;
 }
 
 export interface SearchBarState {
@@ -106,6 +115,7 @@ export class SearchBar extends PureComponent<SearchBarProps, SearchBarState> {
   renderInput = () => {
     const {
       placeholder,
+      clearButtonMode,
       searchIcon,
       inputProps,
       inputTextStyle,
@@ -133,7 +143,7 @@ export class SearchBar extends PureComponent<SearchBarProps, SearchBarState> {
           value={this.state.value}
           onSubmitEditing={this.handleSubmit}
           placeholder={placeholder}
-          clearButtonMode='never'
+          clearButtonMode={clearButtonMode || 'never'}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           returnKeyType='search'
@@ -141,7 +151,34 @@ export class SearchBar extends PureComponent<SearchBarProps, SearchBarState> {
           underlineColorAndroid='transparent'
           {...inputProps}
         />
+        {this.renderRightBtnIcon()}
       </View>
+    );
+  }
+
+  renderRightBtnIcon = () => {
+    const {
+      showRightBtnIcon,
+      rightBtnIcon,
+      onRightBtnPress,
+      rightBtnIconStyle,
+      rightBtnStyle
+    } = this.props;
+
+    if (!showRightBtnIcon || !rightBtnIcon) {
+      return null;
+    }
+
+    const icon = <Image source={rightBtnIcon} style={rightBtnIconStyle} resizeMode='contain' />;
+
+    if (!onRightBtnPress) {
+      return icon;
+    }
+
+    return (
+      <TouchableOpacity style={rightBtnStyle} onPress={onRightBtnPress}>
+        {icon}
+      </TouchableOpacity>
     );
   }
 
